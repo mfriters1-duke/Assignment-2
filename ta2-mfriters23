@@ -1,1 +1,80 @@
+import pandas as pd
+import sqlite3 as sql
 
+
+# Import CSV
+data = pd.read_csv(r"tips.csv")
+df = pd.DataFrame(data)
+
+# Connect to SQL Server
+conn = sql.connect(
+    "Driver={SQL Server};"
+    "Server=RON-SQLEXPRESS;"
+    "Database=test_database;"
+    "Trusted_Connection=yes;"
+)
+cursor = conn.cursor()
+
+# Create Table
+cursor.execute(
+    """CREATE TABLE TIPS (total_bill, tip, sex smoker, day, time, size)
+    """
+)
+
+for row in df.itertuples():
+    cursor.execute(
+        """
+        INSERT INTO TIPS (total_bill, tip, sex smoker, day, time, size)
+        VALUES (?,?,?,?,?,?,?)
+        """,
+        row.total_bill,
+        row.tip,
+        row.sex,
+        row.smoker,
+        row.day,
+        row.time,
+        row.size
+    )
+conn.commit()
+
+conn.close()
+
+#1
+
+USE TIPS; 
+
+SELECT day, 
+
+#2
+
+USE TIPS;
+
+SELECT MAX total_bill, MIN total_bill
+FROM TIPS
+ORDER BY total_bill DESC;
+
+#3
+
+USE TIPS;
+
+SELECT size, Count(size), GROUP BY parties
+FROM TIPS
+ORDER BY total_bill DESC;
+
+#4
+
+USE TIPS;
+
+SELECT MAX total_bill, tip
+FROM TIPS
+WHERE size>=4 and ((tip/total_price)) > .15
+ORDER BY total_bill DESC;
+
+#5
+
+USE TIPS;
+
+SELECT total_bill, tip, (tip/total_bill)
+FROM TIPS
+WHERE size>=4 and ((tip/total_price)) > .15
+ORDER BY total_bill DESC;
